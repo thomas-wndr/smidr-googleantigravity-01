@@ -1,64 +1,52 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('chat-form');
-    const input = document.getElementById('user-input');
-    const history = document.getElementById('chat-history');
-    const submitBtn = form.querySelector('button');
+    const chatkitContainer = document.getElementById('my-chat');
 
-    let messages = [];
+    // Wait for ChatKit to be available if it loads async
+    const initChatKit = () => {
+        if (chatkitContainer && chatkitContainer.setOptions) {
+            chatkitContainer.setOptions({
+                api: {
+                    async getClientSecret(currentClientSecret) {
+                        // If we have a valid secret, we might want to reuse it or refresh it
+                        // For simplicity, we'll fetch a new one or refresh if needed
 
-    function appendMessage(role, text) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${role}`;
-        
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'content';
-        contentDiv.textContent = text;
-        
-        msgDiv.appendChild(contentDiv);
-        history.appendChild(msgDiv);
-        history.scrollTop = history.scrollHeight;
+                        const endpoint = currentClientSecret ? 'chat.php?refresh=true' : 'chat.php';
 
-        messages.push({ role, content: text });
-    }
+                        try {
+                            const response = await fetch(endpoint, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    deviceId: localStorage.getItem('device_id') || undefined
+                                })
+                            });
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const text = input.value.trim();
-        if (!text) return;
+                            if (!response.ok) {
+                                throw new Error('Failed to fetch session token');
+                            }
 
-        // Add user message
-        appendMessage('user', text);
-        input.value = '';
-        submitBtn.disabled = true;
+                            const data = await response.json();
 
-        try {
-            const response = await fetch('chat.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ messages })
+                            if (data.error) {
+                                console.error('Session Error:', data.error);
+                                return null;
+                            }
+
+                            return data.client_secret;
+                        } catch (error) {
+                            console.error('Error fetching client secret:', error);
+                            return null;
+                        }
+                    }
+                }
             });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const data = await response.json();
-            
-            if (data.error) {
-                throw new Error(data.error);
-            }
-
-            const botMessage = data.choices[0].message.content;
-            appendMessage('assistant', botMessage);
-
-        } catch (error) {
-            console.error('Error:', error);
-            appendMessage('bot', 'Sorry, something went wrong. Please check your API key and connection.');
-        } finally {
-            submitBtn.disabled = false;
-            input.focus();
+        } else {
+            // Retry if script hasn't loaded yet
+            setTimeout(initChatKit, 100);
         }
-    });
+    };
+
+    initChatKit();
 });
