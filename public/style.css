@@ -1,7 +1,10 @@
 :root {
-    --bg-color: #ffffff;
-    --text-color: #000000;
-    --border-radius: 7px;
+    --bg-color: #f5f5f7;
+    /* Softer off-white background */
+    --card-bg: #ffffff;
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --border-radius: 12px;
+    /* Slightly more rounded for modern look */
 }
 
 * {
@@ -13,32 +16,48 @@
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--bg-color);
-    color: var(--text-color);
+    color: #1d1d1f;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     width: 100vw;
+    overflow: hidden;
+    /* Prevent body scroll */
 }
 
 .chat-container {
-    width: 100%;
-    max-width: 600px;
-    height: 80vh;
+    width: 90%;
+    max-width: 1000px;
+    /* Wider for better desktop experience */
+    height: 85vh;
     display: flex;
     flex-direction: column;
-    border: 1px solid #e0e0e0;
     border-radius: var(--border-radius);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    background-color: #fff;
+    box-shadow: var(--shadow);
+    background-color: var(--card-bg);
     overflow: hidden;
-    /* Ensure ChatKit takes full space */
     position: relative;
+    transition: all 0.3s ease;
 }
 
-/* ChatKit specific overrides if possible, or container styling */
-#my-chat {
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .chat-container {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        max-width: none;
+    }
+}
+
+/* Ensure the custom element takes full space and looks clean */
+openai-chatkit {
     width: 100%;
     height: 100%;
+    display: block;
     border: none;
+    --ck-font-family: 'Inter', sans-serif;
+    --ck-border-radius: 8px;
+    /* Attempt to override some internal variables if supported */
 }
