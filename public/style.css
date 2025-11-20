@@ -3,7 +3,8 @@
     --card-bg: #ffffff;
     --shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     --border-radius: 12px;
-    --header-height: 60px;
+    --header-height: 50px;
+    /* Reduced height slightly */
 }
 
 * {
@@ -40,22 +41,29 @@ body {
 
 .chat-header {
     height: var(--header-height);
-    padding: 0 24px;
+    /* Center content horizontally and vertically */
     display: flex;
-    align-items: center;
-    border-bottom: 1px solid #f0f0f0;
+    justify-content: center;
+    align-items: flex-start;
+    /* Align to top to allow padding-top */
+    padding-top: 10px;
+    /* "10 px ned fra toppen" */
     background-color: #fff;
     z-index: 10;
+    /* Optional: remove border if you want it cleaner, keeping it for separation */
+    /* border-bottom: 1px solid #f0f0f0; */
 }
 
 .chat-header h1 {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 14px;
+    /* "Litt mindre" (was 18px) */
+    font-weight: 500;
+    /* Slightly lighter weight */
     color: #1d1d1f;
     margin: 0;
+    text-align: center;
 }
 
-/* Adjust ChatKit container to fill remaining space */
 #my-chat {
     flex: 1;
     width: 100%;
